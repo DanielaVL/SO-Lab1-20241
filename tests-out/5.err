@@ -1,0 +1,1 @@
+./tester/run-tests.sh: line 27: 61239 Segmentation fault      (core dumped) ./reverse tests/5.in tests-out/5.in
