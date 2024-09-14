@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 void read_lines(FILE *input_file, char ***lines_ptr, size_t *size_ptr, size_t *capacity_ptr);
 void write_lines(FILE *output_file, char **lines, size_t size);
@@ -46,7 +49,7 @@ void reverse_stdin_stdout(char ***lines_ptr, size_t *size_ptr, size_t *capacity_
 void reverse_file_stdout(const char *input_filename, char ***lines_ptr, size_t *size_ptr, size_t *capacity_ptr) {
     FILE *input_file = fopen(input_filename, "r");
     if (input_file == NULL) {
-        fprintf(stderr, "error: cannot open file '%s'\n", input_filename);
+        fprintf(stderr, "reverse: cannot open file '%s'\n", input_filename);
         exit(1);
     }
 
@@ -58,20 +61,35 @@ void reverse_file_stdout(const char *input_filename, char ***lines_ptr, size_t *
 
 void reverse_file_file(const char *input_filename, const char *output_filename, char ***lines_ptr, size_t *size_ptr, size_t *capacity_ptr) {
     // Verificar si los archivos de entrada y salida son iguales
-    if (strcmp(input_filename, output_filename) == 0) {
-        fprintf(stderr, "Input and output file must differ\n");
+    struct stat input_stat, output_stat;
+
+    // Obtener información del archivo de entrada
+    if (stat(input_filename, &input_stat) != 0) {
+        fprintf(stderr, "reverse: cannot open file '%s'\n", input_filename);
+        exit(1);
+    }
+
+    // Obtener información del archivo de salida
+    if (stat(output_filename, &output_stat) != 0) {
+        fprintf(stderr, "reverse: cannot open file '%s'\n", output_filename);
+        exit(1);
+    }
+
+    // Verificar si los archivos son el mismo
+    if (input_stat.st_ino == output_stat.st_ino && input_stat.st_dev == output_stat.st_dev) {
+        fprintf(stderr, "reverse: input and output file must differ\n");
         exit(1);
     }
 
     FILE *input_file = fopen(input_filename, "r");
     if (input_file == NULL) {
-        fprintf(stderr, "error: cannot open file '%s'\n", input_filename);
+        fprintf(stderr, "reverse: cannot open file '%s'\n", input_filename);
         exit(1);
     }
 
     FILE *output_file = fopen(output_filename, "w");
     if (output_file == NULL) {
-        fprintf(stderr, "error: cannot open file '%s'\n", output_filename);
+        fprintf(stderr, "reverse: cannot open file '%s'\n", output_filename);
         fclose(input_file);
         exit(1);
     }
@@ -91,7 +109,7 @@ void read_lines(FILE *input_file, char ***lines_ptr, size_t *size_ptr, size_t *c
 
     char *line = NULL; 
     size_t len = 0;
-    size_t read;
+    ssize_t read;
 
     while ((read = getline(&line, &len, input_file)) != -1) {
         // Verificar si el array está lleno
@@ -133,7 +151,7 @@ void read_lines(FILE *input_file, char ***lines_ptr, size_t *size_ptr, size_t *c
 }
 
 void write_lines(FILE *output_file, char **lines, size_t size) {
-    for (size_t i = size - 1; i >= 0; i--) {
+    for (ssize_t i = size - 1; i >= 0; i--) {
         fprintf(output_file, "%s", lines[i]);
     }
 }
