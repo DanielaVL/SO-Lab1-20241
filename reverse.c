@@ -89,7 +89,7 @@ void read_lines(FILE *input_file, char ***lines_ptr, size_t *size_ptr, size_t *c
     size_t size = *size_ptr;
     size_t capacity = *capacity_ptr;
 
-    char *line = NULL;
+    char *line = NULL; 
     size_t len = 0;
     size_t read;
 
