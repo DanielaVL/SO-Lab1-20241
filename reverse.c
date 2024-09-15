@@ -82,17 +82,8 @@ void reverse_file_file(const char *input_filename, const char *output_filename, 
     }
 
     FILE *input_file = fopen(input_filename, "r");
-    if (input_file == NULL) {
-        fprintf(stderr, "reverse: cannot open file '%s'\n", input_filename);
-        exit(1);
-    }
 
     FILE *output_file = fopen(output_filename, "w");
-    if (output_file == NULL) {
-        fprintf(stderr, "reverse: cannot open file '%s'\n", output_filename);
-        fclose(input_file);
-        exit(1);
-    }
 
     read_lines(input_file, lines_ptr, size_ptr, capacity_ptr);
     write_lines(output_file, *lines_ptr, *size_ptr);
