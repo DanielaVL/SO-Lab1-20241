@@ -111,6 +111,11 @@ void read_lines(FILE *input_file, char ***lines_ptr, size_t *size_ptr, size_t *c
     size_t len = 0;
     ssize_t read;
 
+    /*
+    documentación para getline:
+    https://www.it.uc3m.es/pbasanta/asng/course_notes/input_output_getline_es.html
+    */
+
     while ((read = getline(&line, &len, input_file)) != -1) {
         // Verificar si el array está lleno
         if (size == capacity) {
